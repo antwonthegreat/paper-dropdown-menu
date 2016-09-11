@@ -17,6 +17,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../iron-validatable-behavior/iron-validatable-behavior.html">
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="../paper-ripple/paper-ripple.html">
 <link rel="import" href="../paper-styles/default-theme.html">
 
@@ -101,6 +102,8 @@ respectively.
       allow-outside-scroll="[[allowOutsideScroll]]">
       <div class="dropdown-trigger">
         <paper-ripple></paper-ripple>
+        <iron-a11y-keys id="a11y" target="[[inputTarget]]" keys="a-z" on-keys-pressed="inputChanged"></iron-a11y-keys>
+
         <!-- paper-input has type="text" for a11y, do not remove -->
         <paper-input
           id="input"
@@ -112,7 +115,8 @@ respectively.
           error-message="[[errorMessage]]"
           always-float-label="[[alwaysFloatLabel]]"
           no-label-float="[[noLabelFloat]]"
-          label="[[label]]">
+          label="[[label]]"
+          on-keydown="inputChanged">
           <iron-icon icon="paper-dropdown-menu:arrow-drop-down" suffix></iron-icon>
         </paper-input>
       </div>
@@ -266,6 +270,30 @@ respectively.
           dynamicAlign: {
             type: Boolean
           },
+
+          /**
+           * If true, the caller is responible for filtering suggestions
+           */
+          remoteFilter: {
+            type: Boolean,
+            value:false
+          },
+
+          /**
+           * If true, the caller is responible for filtering suggestions
+           */
+          suggestions: {
+            type: Array,
+            notify:true
+          },
+
+        },
+
+        inputTarget: {
+          type: Object,
+          value: function() {
+            return this.$.input;
+          }
         },
 
         listeners: {
@@ -284,7 +312,8 @@ respectively.
         },
 
         observers: [
-          '_selectedItemChanged(selectedItem)'
+          '_selectedItemChanged(selectedItem)',
+          'suggestionsChanged(suggestions.splices)',
         ],
 
         attached: function() {
@@ -398,7 +427,17 @@ respectively.
           if (e) {
             e.setAttribute('aria-expanded', openState);
           }
+
+        },
+
+        suggestionsChanged:function(suggestions){
+          console.log('suggestionsChanged');
+        },
+
+        inputChanged:function(value){
+          this.fire('input-change',{value:this.$.input.value});
         }
+
       });
     })();
   </script>
