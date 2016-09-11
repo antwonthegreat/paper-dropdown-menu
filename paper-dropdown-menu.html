@@ -103,9 +103,9 @@ respectively.
         <paper-ripple></paper-ripple>
         <!-- paper-input has type="text" for a11y, do not remove -->
         <paper-input
+          id="input"
           type="text"
           invalid="[[invalid]]"
-          readonly
           disabled="[[disabled]]"
           value="[[selectedItemLabel]]"
           placeholder="[[placeholder]]"
@@ -142,8 +142,7 @@ respectively.
            */
           selectedItemLabel: {
             type: String,
-            notify: true,
-            readOnly: true
+            notify: true
           },
 
           /**
@@ -364,7 +363,7 @@ respectively.
           }
 
           this._setValue(value);
-          this._setSelectedItemLabel(value);
+          this.$.input.value = value
         },
 
         /**
