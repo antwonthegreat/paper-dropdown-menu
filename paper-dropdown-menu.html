@@ -87,19 +87,7 @@ respectively.
 
     <!-- this div fulfills an a11y requirement for combobox, do not remove -->
     <span role="button"></span>
-    <paper-menu-button
-      id="menuButton"
-      vertical-align="[[verticalAlign]]"
-      horizontal-align="[[horizontalAlign]]"
-      dynamic-align="[[dynamicAlign]]"
-      vertical-offset="[[_computeMenuVerticalOffset(noLabelFloat)]]"
-      disabled="[[disabled]]"
-      no-animations="[[noAnimations]]"
-      on-iron-select="_onIronSelect"
-      on-iron-deselect="_onIronDeselect"
-      opened="{{opened}}"
-      close-on-activate
-      allow-outside-scroll="[[allowOutsideScroll]]">
+    
       <div class="dropdown-trigger">
         <paper-ripple></paper-ripple>
         <iron-a11y-keys id="a11y" target="[[inputTarget]]" keys="a-z" on-keys-pressed="inputChanged"></iron-a11y-keys>
@@ -116,12 +104,13 @@ respectively.
           always-float-label="[[alwaysFloatLabel]]"
           no-label-float="[[noLabelFloat]]"
           label="[[label]]"
-          on-keydown="inputChanged">
+          on-focus="inputFocused"
+          on-blur="inputBlurred"
+          on-keyup="inputChanged">
           <iron-icon icon="paper-dropdown-menu:arrow-drop-down" suffix></iron-icon>
         </paper-input>
       </div>
       <content id="content" select=".dropdown-content"></content>
-    </paper-menu-button>
   </template>
 
   <script>
@@ -287,6 +276,12 @@ respectively.
             notify:true
           },
 
+          inputFocus: {
+            type: Boolean,
+            notify:true
+          },
+
+
         },
 
         inputTarget: {
@@ -373,7 +368,7 @@ respectively.
          */
         _onTap: function(event) {
           if (Polymer.Gestures.findOriginalTarget(event) === this) {
-            this.open();
+            //this.open();
           }
         },
 
@@ -430,13 +425,25 @@ respectively.
 
         },
 
-        suggestionsChanged:function(suggestions){
-          console.log('suggestionsChanged');
+        suggestionsChanged:function(){
+          if(this.inputFocus && this.suggestions && this.suggestions.length > 0){
+            this.open();
+          }
         },
 
         inputChanged:function(value){
+          console.log("1:"+this.$.input.value);
           this.fire('input-change',{value:this.$.input.value});
+        },
+
+        inputFocused:function(){
+          this.inputFocus = true;
+        },
+
+        inputBlurred:function(){
+          this.inputFocus = false;
         }
+
 
       });
     })();
